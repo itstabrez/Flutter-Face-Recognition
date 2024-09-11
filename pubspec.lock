@@ -185,7 +185,7 @@ packages:
     source: hosted
     version: "0.7.1"
   google_mlkit_digital_ink_recognition:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: google_mlkit_digital_ink_recognition
       sha256: "06488a331c4fd2801c2753b801f2d6169ba9593447242828fbfa5960a0ca29a4"
