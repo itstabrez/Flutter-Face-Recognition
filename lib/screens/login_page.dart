@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_face_recognition/screens/face%20recognition/camera_page.dart';
 import 'package:flutter_face_recognition/utils/local_db.dart';
-
 import '../utils/utils.dart';
 
 class LoginPage extends StatefulWidget {

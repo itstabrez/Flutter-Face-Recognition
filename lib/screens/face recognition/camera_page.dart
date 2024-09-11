@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_face_recognition/model/user.dart';
@@ -58,7 +60,12 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
     InputImage _firebaseVisionImage = InputImage.fromBytes(
       metadata: _firebaseImageMetadata,
-      bytes: image.planes[0].bytes,
+      bytes: Uint8List.fromList(
+        image.planes.fold(
+            <int>[],
+            (List<int> previousValue, element) =>
+                previousValue..addAll(element.bytes)),
+      ),
     );
     var result = await _faceDetector.processImage(_firebaseVisionImage);
     if (result.isNotEmpty) {
@@ -111,8 +118,8 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   void initState() {
     _cameraController = CameraController(cameras![1], ResolutionPreset.high);
     initializeCamera();
-    _faceDetector = GoogleMlKit.vision.faceDetector(
-      FaceDetectorOptions(
+    _faceDetector = FaceDetector(
+      options: FaceDetectorOptions(
         performanceMode: FaceDetectorMode.accurate,
       ),
     );

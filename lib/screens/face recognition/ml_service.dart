@@ -17,14 +17,15 @@ class MLService {
   Future<User?> predict(
       CameraImage cameraImage, Face face, bool loginUser, String name) async {
     List input = _preProcess(cameraImage, face);
+
     input = input.reshape([1, 112, 112, 3]);
 
-    List output = List.generate(1, (index) => List.filled(192, 0));
+    List output = List.generate(1, (index) => List.filled(128, 0));
 
     await initializeInterpreter();
 
     interpreter.run(input, output);
-    output = output.reshape([192]);
+    output = output.reshape([128]);
 
     predictedArray = List.from(output);
 
@@ -54,17 +55,13 @@ class MLService {
     return pow(sum, 0.5);
   }
 
-  initializeInterpreter() async {
+  Future<void> initializeInterpreter() async {
     Delegate? delegate;
     try {
       if (Platform.isAndroid) {
         delegate = GpuDelegateV2(
           options: GpuDelegateOptionsV2(
             isPrecisionLossAllowed: false,
-            // inferencePreference: TfLiteGpuInferenceUsage.fastSingleAnswer,
-            // inferencePriority1: TfLiteGpuInferencePriority.minLatency,
-            // inferencePriority2: TfLiteGpuInferencePriority.auto,
-            // inferencePriority3: TfLiteGpuInferencePriority.auto,
           ),
         );
       } else if (Platform.isIOS) {
@@ -74,13 +71,33 @@ class MLService {
           ),
         );
       }
-      var interpreterOptions = InterpreterOptions()..addDelegate(delegate!);
 
-      interpreter = await Interpreter.fromAsset('mobilefacenet.tflite',
-          options: interpreterOptions);
+      var interpreterOptions = InterpreterOptions();
+
+      // Try adding the GPU delegate, but catch any issues related to it
+      if (delegate != null) {
+        interpreterOptions.addDelegate(delegate);
+      }
+
+      interpreter = await Interpreter.fromAsset(
+        'assets/facenet_model.tflite',
+        options: interpreterOptions,
+      );
+      debugPrint('Interpreter initialized successfully.');
     } catch (e) {
-      debugPrint('Failed to load model.');
+      debugPrint(
+          'Failed to load interpreter with delegate. Trying without delegate.');
       debugPrint(e.toString());
+      // Try initializing without the GPU delegate if the first attempt failed
+      try {
+        interpreter =
+            await Interpreter.fromAsset('assets/facenet_model.tflite');
+        debugPrint('Interpreter initialized successfully without delegate.');
+      } catch (e) {
+        debugPrint('Failed to initialize interpreter even without delegate.');
+        debugPrint(e.toString());
+        rethrow; // Rethrow the exception or handle it as necessary
+      }
     }
   }
 
@@ -104,6 +121,7 @@ class MLService {
 
   imglib.Image _convertCameraImage(CameraImage image) {
     var img = convertToImage(image);
+
     var img1 = imglib.copyRotate(img!, angle: -90);
     return img1;
   }
@@ -115,11 +133,18 @@ class MLService {
 
     for (var i = 0; i < 112; i++) {
       for (var j = 0; j < 112; j++) {
-        int pixel = image.getPixel(j, i) as int;
+        imglib.Pixel pixel = image.getPixel(i, j);
+
+        // var pixel = image.getPixel(j, i);
+
         // Extract RGBA components from pixel value
-        int r = (pixel >> 24) & 0xFF;
-        int g = (pixel >> 16) & 0xFF;
-        int b = (pixel >> 8) & 0xFF;
+        var r = pixel.r; // Red component
+        var g = pixel.g; // Green component
+        var b = pixel.b; // Blue component
+
+        // int r = (pixel >> 24) & 0xFF;
+        // int g = (pixel >> 16) & 0xFF;
+        // int b = (pixel >> 8) & 0xFF;
 
         // Normalize and store pixel values
         buffer[pixelIndex++] = (r - 128) / 128.0;

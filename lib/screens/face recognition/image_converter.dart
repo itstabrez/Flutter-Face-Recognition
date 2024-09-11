@@ -7,8 +7,10 @@ import 'package:camera/camera.dart';
 imglib.Image? convertToImage(CameraImage image) {
   try {
     if (image.format.group == ImageFormatGroup.yuv420) {
+      print("This is the format yuv420");
       return _convertYUV420(image);
     } else if (image.format.group == ImageFormatGroup.bgra8888) {
+      print("This is the format bgra8888");
       return _convertBGRA8888(image);
     }
     throw Exception('Image format not supported');
@@ -35,10 +37,10 @@ imglib.Image _convertBGRA8888(CameraImage image) {
 imglib.Image _convertYUV420(CameraImage image) {
   int width = image.width;
   int height = image.height;
+
   var img = imglib.Image(
       height: height,
       width: width); // Create an image with the specified width and height.
-  const int hexFF = 0xFF000000;
   final int uvyButtonStride = image.planes[1].bytesPerRow;
   final int? uvPixelStride = image.planes[1].bytesPerPixel;
 
@@ -59,10 +61,8 @@ imglib.Image _convertYUV420(CameraImage image) {
       int b = (yp + up * 1814 / 1024 - 227).round().clamp(0, 255);
 
       // Set the pixel color.
-      int color = hexFF | (r << 16) | (g << 8) | b;
-      img.setPixel(x, y, color as imglib.Color);
+      img.setPixelRgb(x, y, r, g, b);
     }
   }
-
   return img;
 }
