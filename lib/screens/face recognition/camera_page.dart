@@ -131,7 +131,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
-
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
@@ -181,7 +180,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                                     .then((value) {
                                   canProcess = false;
                                 });
-                                return null;
+                                return;
                               });
                             }),
                       ),
