@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_face_recognition/model/user.dart';
 import 'package:flutter_face_recognition/screens/face%20recognition/image_converter.dart';
 import 'package:flutter_face_recognition/utils/local_db.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as imglib;
 

@@ -5,7 +5,7 @@ import 'package:flutter_face_recognition/model/user.dart';
 import 'package:flutter_face_recognition/screens/face%20recognition/ml_service.dart';
 import 'package:flutter_face_recognition/screens/home_page.dart';
 import 'package:flutter_face_recognition/widgets/common_widgets.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:lottie/lottie.dart';
 
 List<CameraDescription>? cameras;
