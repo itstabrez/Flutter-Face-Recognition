@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.flutter_face_recognition"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -37,7 +37,11 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+    aaptOptions {
+        noCompress "assets/facenet_model.tflite"  // Avoid compressing TFLite models
+    }
 }
+
 
 flutter {
     source = "../.."
